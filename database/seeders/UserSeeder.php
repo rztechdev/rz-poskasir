@@ -11,24 +11,26 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Super Admin Platform Master
-        $superadmin = User::firstOrCreate(
-            ['email' => env('SUPERADMIN_EMAIL', 'superadmin@gmail.com')],
+        // 1. Super Admin Platform Master (Update jika sudah ada, buat jika belum)
+        $superadmin = User::updateOrCreate(
+            ['role' => 'superadmin'],
             [
                 'name' => env('SUPERADMIN_NAME', 'Super Admin Platform'),
                 'username' => env('SUPERADMIN_USERNAME', 'superadmin'),
+                'email' => env('SUPERADMIN_EMAIL', 'superadmin@gmail.com'),
                 'phone' => env('SUPERADMIN_PHONE', '081122334455'),
                 'role' => 'superadmin',
                 'password' => Hash::make(env('SUPERADMIN_PASSWORD', '12345678')),
             ]
         );
 
-        // 2. Admin EO (Event Organizer)
-        User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@gmail.com')],
+        // 2. Admin EO (Event Organizer) (Update jika sudah ada, buat jika belum)
+        User::updateOrCreate(
+            ['role' => 'admin'],
             [
                 'name' => env('ADMIN_NAME', 'Admin EO'),
                 'username' => env('ADMIN_USERNAME', 'admin'),
+                'email' => env('ADMIN_EMAIL', 'admin@gmail.com'),
                 'phone' => env('ADMIN_PHONE', '081299887766'),
                 'role' => 'admin',
                 'password' => Hash::make(env('ADMIN_PASSWORD', '12345678')),
