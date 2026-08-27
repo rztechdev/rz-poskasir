@@ -1227,7 +1227,9 @@ Alpine.store('app', {
  }
 
  try {
- const basePath = window.location.pathname.startsWith('/admin') ? '/admin' : '/user';
+ const basePath = (this.currentRole === 'superadmin' || window.location.pathname.startsWith('/superadmin'))
+ ? '/superadmin'
+ : (this.currentRole === 'admin' || window.location.pathname.startsWith('/admin') ? '/admin' : '/user');
  const url = this.isEditingProduct ? `${basePath}/produk/${this.productFormData.id}` : `${basePath}/produk`;
  
  let payload;
@@ -1296,7 +1298,9 @@ Alpine.store('app', {
  if (!this.productToDelete) return;
  
  try {
- const basePath = window.location.pathname.startsWith('/admin') ? '/admin' : '/user';
+ const basePath = (this.currentRole === 'superadmin' || window.location.pathname.startsWith('/superadmin'))
+ ? '/superadmin'
+ : (this.currentRole === 'admin' || window.location.pathname.startsWith('/admin') ? '/admin' : '/user');
  const data = await apiFetch(`${basePath}/produk/${this.productToDelete.id}`, {
  method: 'DELETE'
  });

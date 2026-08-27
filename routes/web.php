@@ -158,9 +158,11 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::post('/verifikasi-cash/{transaction}/confirm', [AdminCashVerificationController::class, 'confirm'])->name('verifikasi-cash.confirm');
     Route::post('/verifikasi-cash/{transaction}/without-payment', [AdminCashVerificationController::class, 'completeWithoutPayment'])->name('verifikasi-cash.without-payment');
     Route::post('/verifikasi-cash/{transaction}/reject', [AdminCashVerificationController::class, 'reject'])->name('verifikasi-cash.reject');
-    Route::delete('/verifikasi-cash/{transaction}', [AdminCashVerificationController::class, 'destroy'])->name('verifikasi-cash.destroy');
     Route::get('/produk', [AdminProductController::class, 'index'])->name('produk');
-    Route::get('/warung', [AdminStoreController::class, 'index'])->name('warung');
+    Route::post('/produk', [AdminProductController::class, 'store'])->name('produk.store');
+    Route::match(['put', 'post'], '/produk/{product}', [AdminProductController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{product}', [AdminProductController::class, 'destroy'])->name('produk.destroy');
+
     Route::get('/helpdesk', [AdminHelpdeskController::class, 'index'])->name('helpdesk');
     Route::get('/kasir', [UserKasirController::class, 'index'])->name('kasir');
     Route::get('/panduan', [AdminGuideController::class, 'index'])->name('panduan');

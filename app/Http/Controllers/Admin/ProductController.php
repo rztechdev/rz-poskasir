@@ -30,7 +30,7 @@ class ProductController extends Controller
     {
         $store = Store::findOrFail($request->store_id);
 
-        if (!$store->event->is_active) {
+        if ($store->event && !$store->event->is_active && !auth()->user()->isSuperAdmin()) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menambah produk karena event sudah inaktif.'], 403);
         }
 
@@ -65,12 +65,13 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.produk')->with('success', 'Produk menu berhasil ditambahkan!');
+        $redirectRoute = auth()->user()->isSuperAdmin() ? 'superadmin.produk' : 'admin.produk';
+        return redirect()->route($redirectRoute)->with('success', 'Produk menu berhasil ditambahkan!');
     }
 
     public function update(ProductRequest $request, Product $product): JsonResponse|RedirectResponse
     {
-        if (!$product->store->event->is_active) {
+        if ($product->store && $product->store->event && !$product->store->event->is_active && !auth()->user()->isSuperAdmin()) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat mengubah produk karena event sudah inaktif.'], 403);
         }
 
@@ -111,12 +112,13 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.produk')->with('success', 'Produk menu berhasil diperbarui!');
+        $redirectRoute = auth()->user()->isSuperAdmin() ? 'superadmin.produk' : 'admin.produk';
+        return redirect()->route($redirectRoute)->with('success', 'Produk menu berhasil diperbarui!');
     }
 
     public function destroy(Product $product): JsonResponse|RedirectResponse
     {
-        if (!$product->store->event->is_active) {
+        if ($product->store && $product->store->event && !$product->store->event->is_active && !auth()->user()->isSuperAdmin()) {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus produk karena event sudah inaktif.'], 403);
         }
 
@@ -129,6 +131,8 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.produk')->with('success', 'Produk berhasil dihapus.');
+        $redirectRoute = auth()->user()->isSuperAdmin() ? 'superadmin.produk' : 'admin.produk';
+        return redirect()->route($redirectRoute)->with('success', 'Produk berhasil dihapus.');
     }
+
 }
