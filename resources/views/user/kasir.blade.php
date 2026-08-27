@@ -243,9 +243,9 @@
  </div>
 
  <!-- Unified Scrollable Body: Cart Items + Payment Panel Below -->
- <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 custom-scrollbar">
- <!-- Cart Items List (Always visible at the top, never squashed) -->
- <div class="space-y-2.5">
+ <div class="flex-1 overflow-y-auto p-4 sm:p-5 custom-scrollbar flex flex-col">
+ <!-- Cart Items List (Primary Focus at the Top) -->
+ <div class="space-y-2.5 pb-2">
  <template x-if="$store.app.cart.length === 0">
  <div class="py-16 text-center text-[#595952]">
  <svg class="w-14 h-14 mx-auto mb-3 opacity-30 text-[#8b9b70]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
@@ -308,8 +308,8 @@
  </template>
  </div>
 
- <!-- Payment Panel (Appears naturally below cart items, expanding downwards) -->
- <div x-show="$store.app.cart.length > 0" x-cloak class="pt-4 border-t border-[#eceae0] space-y-4">
+ <!-- Payment Panel (Positioned with mt-auto, expanding downwards for scroll) -->
+ <div x-show="$store.app.cart.length > 0" x-cloak class="mt-auto pt-6 border-t border-[#eceae0] space-y-4">
  <!-- Total Bill -->
  <div x-show="$store.app.cartNegotiatedDiscount > 0" x-cloak class="flex items-center justify-between text-xs">
  <span class="font-bold text-[#595952]">Potongan hasil nego</span>
