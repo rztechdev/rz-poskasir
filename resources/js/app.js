@@ -1262,13 +1262,18 @@ Alpine.store('app', {
  };
  }
 
- // If using FormData and PUT method, we must send POST to Laravel and spoof it via _method inside the FormData body.
- // Wait, our apiFetch doesn't automatically convert method to POST if using PUT with FormData.
- // Let's do it here just in case.
- const method = (this.isEditingProduct && this.productFormData.photoFile) ? 'POST' : (this.isEditingProduct ? 'PUT' : 'POST');
+ // Selalu POST. Untuk edit, method PUT di-spoof lewat _method — banyak hosting/WAF
+ // memblokir HTTP PUT/DELETE mentah (403), jadi jangan pernah kirim PUT langsung.
+ if (this.isEditingProduct) {
+ if (payload instanceof FormData) {
+ if (!payload.has('_method')) payload.append('_method', 'PUT');
+ } else {
+ payload._method = 'PUT';
+ }
+ }
 
  const data = await apiFetch(url, {
- method: method,
+ method: 'POST',
  body: payload
  });
 
@@ -1301,8 +1306,12 @@ Alpine.store('app', {
  const basePath = (this.currentRole === 'superadmin' || window.location.pathname.startsWith('/superadmin'))
  ? '/superadmin'
  : (this.currentRole === 'admin' || window.location.pathname.startsWith('/admin') ? '/admin' : '/user');
+ // POST + _method=DELETE (spoof) — hindari DELETE mentah yang sering diblokir hosting (403).
+ const delForm = new FormData();
+ delForm.append('_method', 'DELETE');
  const data = await apiFetch(`${basePath}/produk/${this.productToDelete.id}`, {
- method: 'DELETE'
+ method: 'POST',
+ body: delForm
  });
  
  if (data.success) {
