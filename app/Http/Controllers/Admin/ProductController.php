@@ -30,10 +30,6 @@ class ProductController extends Controller
     {
         $store = Store::findOrFail($request->store_id);
 
-        if ($store->event && !$store->event->is_active && !auth()->user()->isSuperAdmin()) {
-            return response()->json(['success' => false, 'message' => 'Tidak dapat menambah produk karena event sudah inaktif.'], 403);
-        }
-
         $photoPath = $request->input('photo');
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('products', 'public');
@@ -71,10 +67,6 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): JsonResponse|RedirectResponse
     {
-        if ($product->store && $product->store->event && !$product->store->event->is_active && !auth()->user()->isSuperAdmin()) {
-            return response()->json(['success' => false, 'message' => 'Tidak dapat mengubah produk karena event sudah inaktif.'], 403);
-        }
-
         $data = array_merge($request->priceAttributes(), [
             'title' => $request->title,
             'category' => $request->category ?: $product->category,
@@ -118,10 +110,6 @@ class ProductController extends Controller
 
     public function destroy(Product $product): JsonResponse|RedirectResponse
     {
-        if ($product->store && $product->store->event && !$product->store->event->is_active && !auth()->user()->isSuperAdmin()) {
-            return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus produk karena event sudah inaktif.'], 403);
-        }
-
         $product->delete();
 
         if (request()->expectsJson() || request()->ajax()) {
@@ -134,5 +122,6 @@ class ProductController extends Controller
         $redirectRoute = auth()->user()->isSuperAdmin() ? 'superadmin.produk' : 'admin.produk';
         return redirect()->route($redirectRoute)->with('success', 'Produk berhasil dihapus.');
     }
+
 
 }
