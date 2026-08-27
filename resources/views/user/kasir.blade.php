@@ -242,8 +242,10 @@
  </div>
  </div>
 
- <!-- Drawer Content: Cart Items List -->
- <div class="flex-1 min-h-0 overflow-y-auto p-5 space-y-3 custom-scrollbar">
+ <!-- Unified Scrollable Body: Cart Items + Payment Panel Below -->
+ <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 custom-scrollbar">
+ <!-- Cart Items List (Always visible at the top, never squashed) -->
+ <div class="space-y-2.5">
  <template x-if="$store.app.cart.length === 0">
  <div class="py-16 text-center text-[#595952]">
  <svg class="w-14 h-14 mx-auto mb-3 opacity-30 text-[#8b9b70]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
@@ -253,7 +255,7 @@
  </template>
 
  <template x-for="item in $store.app.cart" :key="item.product.id">
- <div class="p-3 rounded-2xl bg-[#f9f8f3] border border-[#eceae0] flex items-center justify-between gap-3">
+ <div class="p-3 rounded-2xl bg-[#f9f8f3] border border-[#eceae0] flex items-center justify-between gap-3 shadow-2xs">
  <img :src="$store.app.getProductPhoto(item.product.photo)" x-on:error="$event.target.src = $store.app.getProductPhoto(null)" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-[#eceae0]">
  <div class="flex-1 min-w-0">
  <h5 class="font-black text-xs sm:text-sm text-[#2e2e2a] truncate" x-text="item.product.title"></h5>
@@ -306,8 +308,8 @@
  </template>
  </div>
 
- <!-- Payment Panel Footer -->
- <div x-show="$store.app.cart.length > 0" x-cloak class="shrink-0 max-h-[75vh] overflow-y-auto custom-scrollbar p-5 border-t border-[#eceae0] bg-[#f9f8f3] space-y-4">
+ <!-- Payment Panel (Appears naturally below cart items, expanding downwards) -->
+ <div x-show="$store.app.cart.length > 0" x-cloak class="pt-4 border-t border-[#eceae0] space-y-4">
  <!-- Total Bill -->
  <div x-show="$store.app.cartNegotiatedDiscount > 0" x-cloak class="flex items-center justify-between text-xs">
  <span class="font-bold text-[#595952]">Potongan hasil nego</span>
@@ -431,10 +433,10 @@
  <p class="text-xs font-bold text-[#595952] mt-2">Menyiapkan QRIS...</p>
  </div>
  <div x-show="!$store.app.dynamicQrisLoading && $store.app.dynamicQrisDataUrl" class="flex flex-col items-center justify-center py-1">
- <img :src="$store.app.dynamicQrisDataUrl" alt="QRIS Code" class="w-40 h-40 object-contain rounded-xl border border-[#eceae0] p-1 bg-white">
+ <img :src="$store.app.dynamicQrisDataUrl" alt="QRIS Code" class="w-32 h-32 sm:w-36 sm:h-36 object-contain rounded-xl border border-[#eceae0] p-1 bg-white shadow-2xs">
  <p class="text-[11px] font-bold text-[#8b9b70] mt-2 tracking-wide uppercase">NMID: {{ \App\Models\Event::getActive() ? \App\Models\Event::getActive()->name : '-' }}</p>
- <p class="text-xs font-black text-[#2e2e2a] mt-1" x-text="window.__ACTIVE_EVENT__.name"></p>
- <p class="text-[10px] text-[#00ba7c] font-bold mt-2 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1.5 rounded-lg">Nominal otomatis terisi: <span x-text="formatRupiah($store.app.cartTotal + uniqueCode)"></span></p>
+ <p class="text-xs font-black text-[#2e2e2a] mt-0.5" x-text="window.__ACTIVE_EVENT__.name"></p>
+ <p class="text-[10px] text-[#00ba7c] font-bold mt-1.5 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-lg">Nominal otomatis: <span x-text="formatRupiah($store.app.cartTotal + uniqueCode)"></span></p>
  </div>
  </div>
  </template>
@@ -443,8 +445,8 @@
  <span class="text-[11px] font-bold text-[#2e2e2a] block uppercase">Scan QRIS Pembayaran</span>
  <template x-if="window.__ACTIVE_EVENT__ && window.__ACTIVE_EVENT__.qris_image_url">
  <div class="flex flex-col items-center justify-center py-1">
- <img :src="window.__ACTIVE_EVENT__.qris_image_url" alt="QRIS Code" class="w-40 h-40 object-contain rounded-xl border border-[#eceae0] p-1 bg-white">
- <p class="text-xs font-black text-[#2e2e2a] mt-2" x-text="window.__ACTIVE_EVENT__.name"></p>
+ <img :src="window.__ACTIVE_EVENT__.qris_image_url" alt="QRIS Code" class="w-32 h-32 sm:w-36 sm:h-36 object-contain rounded-xl border border-[#eceae0] p-1 bg-white shadow-2xs">
+ <p class="text-xs font-black text-[#2e2e2a] mt-1" x-text="window.__ACTIVE_EVENT__.name"></p>
  
  <!-- Alert Input Manual untuk QRIS Statis -->
  <div class="mt-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl text-left flex items-start gap-2.5 text-amber-900 w-full">
