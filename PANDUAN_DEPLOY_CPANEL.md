@@ -1,4 +1,4 @@
-﻿# 📘 Panduan Lengkap Deploy RZ POS Kasir ke cPanel
+# 📘 Panduan Lengkap Deploy RZ POS Kasir ke cPanel
 
 Panduan ini untuk mengaktifkan project **RZ POS Kasir** di subdomain **`rzposkasir.rzdigitalcreative.my.id`**.
 
@@ -111,7 +111,7 @@ ADMIN_PASSWORD=AdminKasir2026!
 
 ---
 
-## 📦 Langkah 4: Upload `vendor.zip` & `public_assets.zip`
+## 📦 Langkah 4: Upload `vendor.zip`, `public_assets.zip` & `storage_public.zip`
 
 File zip sudah disiapkan di folder komputer Anda (`d:\Project - Rz digital creative\pos kasir\rz - pos-kasir\`):
 
@@ -121,6 +121,11 @@ File zip sudah disiapkan di folder komputer Anda (`d:\Project - Rz digital creat
 2. **Upload `public_assets.zip`**:
    - Di File Manager, masuk ke `/home/rzdigita/repositories/rz-poskasir/public/`
    - Upload file **`public_assets.zip`** ➡️ lalu klik kanan **Extract**.
+3. **Upload `storage_public.zip` (Foto Produk & Media)**:
+   - Di File Manager, masuk ke `/home/rzdigita/repositories/rz-poskasir/storage/app/public/` *(buat folder `public` jika belum ada)*
+   - Upload file **`storage_public.zip`** ➡️ lalu klik kanan **Extract**.
+   - *(Opsional)* Jika symlink cPanel tidak aktif, Anda juga bisa extract `storage_public.zip` ke dalam folder `/home/rzdigita/repositories/rz-poskasir/public/storage/`.
+
 
 ---
 
@@ -137,6 +142,23 @@ Karena tidak ada akses terminal SSH, jalankan migrasi database lewat skrip helpe
 <?php
 use Illuminate\Support\Facades\Artisan;
 
+// Pastikan semua folder storage & cache sudah ada
+$dirs = [
+    __DIR__ . '/../storage/framework/views',
+    __DIR__ . '/../storage/framework/cache',
+    __DIR__ . '/../storage/framework/cache/data',
+    __DIR__ . '/../storage/framework/sessions',
+    __DIR__ . '/../storage/logs',
+    __DIR__ . '/../storage/app/public',
+    __DIR__ . '/../bootstrap/cache',
+];
+
+foreach ($dirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0775, true);
+    }
+}
+
 define('LARAVEL_START', microtime(true));
 require __DIR__.'/../vendor/autoload.php';
 $app = require_once __DIR__.'/../bootstrap/app.php';
@@ -146,18 +168,22 @@ $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
 
-echo "<h2>Menjalankan Migrasi & Seed Database RZ POS Kasir...</h2>";
+echo "<h2>Menjalankan Migrasi & Setup RZ POS Kasir...</h2>";
 
 try {
-    // 1. Migrate Database
+    // 1. Clear Cache lama jika ada
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+
+    // 2. Migrate Database
     Artisan::call('migrate', ['--force' => true]);
     echo "<p style='color:green'>✔ Migrasi Database: " . nl2br(Artisan::output()) . "</p>";
 
-    // 2. Seed Database (Akun Admin & Data Awal)
+    // 3. Seed Database (Akun Admin & Data Awal)
     Artisan::call('db:seed', ['--force' => true]);
     echo "<p style='color:green'>✔ Seed Database: " . nl2br(Artisan::output()) . "</p>";
 
-    // 3. Storage Link
+    // 4. Storage Link
     Artisan::call('storage:link');
     echo "<p style='color:green'>✔ Storage Link: " . nl2br(Artisan::output()) . "</p>";
 
@@ -165,6 +191,7 @@ try {
 } catch (\Exception $e) {
     echo "<p style='color:red'>ERROR: " . $e->getMessage() . "</p>";
 }
+
 ```
 4. Simpan file.
 5. Buka di browser:  
