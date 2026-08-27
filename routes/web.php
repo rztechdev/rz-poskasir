@@ -63,8 +63,11 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:user'])->group(f
     Route::post('/kasir/checkout-qris-tanpa-bukti', [UserKasirController::class, 'checkoutQrisWithoutProof'])->name('kasir.checkout-qris-without-proof');
     Route::post('/kasir/generate-qris', [UserKasirController::class, 'generateQris'])->name('kasir.generate-qris');
 
-    // Kasir (karyawan) hanya boleh melihat katalog, tidak menambah/mengubah produk.
     Route::get('/produk', [UserProductController::class, 'index'])->name('produk');
+    Route::post('/produk', [UserProductController::class, 'store'])->name('produk.store');
+    Route::match(['put', 'post'], '/produk/{product}', [UserProductController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{product}', [UserProductController::class, 'destroy'])->name('produk.destroy');
+
 
     // Laporan penjualan cabang (kasir bisa lihat & cetak sendiri)
     Route::get('/laporan', [UserReportController::class, 'index'])->name('laporan');

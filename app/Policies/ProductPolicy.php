@@ -22,21 +22,26 @@ class ProductPolicy
 
     public function view(User $user, Product $product): bool
     {
-        return $user->store_id === $product->store_id;
+        $userStoreId = $user->store_id ?: ($user->ownedStore?->id ?: $user->store?->id);
+        return $userStoreId && (int)$userStoreId === (int)$product->store_id;
     }
 
     public function create(User $user): bool
     {
-        return $user->store_id !== null;
+        $userStoreId = $user->store_id ?: ($user->ownedStore?->id ?: $user->store?->id);
+        return $userStoreId !== null;
     }
 
     public function update(User $user, Product $product): bool
     {
-        return $user->store_id === $product->store_id;
+        $userStoreId = $user->store_id ?: ($user->ownedStore?->id ?: $user->store?->id);
+        return $userStoreId && (int)$userStoreId === (int)$product->store_id;
     }
 
     public function delete(User $user, Product $product): bool
     {
-        return $user->store_id === $product->store_id;
+        $userStoreId = $user->store_id ?: ($user->ownedStore?->id ?: $user->store?->id);
+        return $userStoreId && (int)$userStoreId === (int)$product->store_id;
     }
 }
+

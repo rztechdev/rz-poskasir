@@ -26,8 +26,13 @@ class EnsureRole
 
         $user = Auth::user();
 
-        // Superadmin has superuser access to admin endpoints
-        if ($user->isSuperAdmin() && in_array('admin', $roles)) {
+        // Superadmin has superuser access to all endpoints
+        if ($user->isSuperAdmin()) {
+            return $next($request);
+        }
+
+        // Admin has access to admin and user endpoints
+        if ($user->isAdmin() && (in_array('admin', $roles) || in_array('user', $roles))) {
             return $next($request);
         }
 
@@ -45,6 +50,7 @@ class EnsureRole
                 return redirect()->route('user.kasir');
             }
         }
+
 
         return $next($request);
     }
